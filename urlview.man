@@ -34,7 +34,7 @@ attempts to read
 upon startup.  If this file
 doesn't exist, it will try to read a system wide file 
 in 
-.IR /etc/urlview.conf .
+.IR /etc/urlview/system.urlview .
 There are two configuration commands (order does not matter):
 .TP
 REGEXP \fIregexp\fP
@@ -48,7 +48,7 @@ meanings.  The default REGEXP is:
 .sp 
 .ft RR
 .nf
-(((https?|ftp|gopher)://|(mailto|file|news):)[^' \t<>"]+|(www|web|w3)\.[-a-z0-9.]+)[^' \t.,;<>"\):]
+(((http|https|ftp|gopher)|mailto):(//)?[^ <>"\\t]*|(www|ftp)[0-9]?\\.[-a-z0-9.]+)[^ .,;\\t\\n\\r<">\\):]?[^, <>"\\t]*[^ .,;\\t\\n\\r<">\\):]
 .fi
 .ec
 .ft P
@@ -62,7 +62,7 @@ with the URL that was requested, otherwise the URL is appended to
 the COMMAND string.  The default COMMAND is:
 .br
 .sp
-url_handler.sh %s
+/etc/urlview/url_handler.sh
 .PP
 .B Note:
 You should 
@@ -74,22 +74,36 @@ does this for you, and also makes sure that single quotes eventually
 showing up inside the URL are handled properly.  (Note that this
 shouldn't happen with the default regular expression, which
 explicitly excludes single quotes.)
+.TP
+WRAP  \fIchoice\fP
+Enable or disable URL wrapping. Valid values for \fIchoice\fP are: yes, no (case insensitive).
+If this option is not supplied, the default behaviour is to disable wrapping.
 .SH FILES
 .PP
-.IP "/etc/urlview.conf"
+.IP "/etc/urlview/system.urlview"
 system-wide urlview configuration file
 .IP "~/.urlview"
 urlview configuration file
+.SH ENVIRONMENT
+If the environment variable BROWSER is set to a browser command, or a
+colon-delimited list of commands to try, then the specified browser is
+used. %s is replaced with the quoted url to view. If %s is not part of a
+command, the url is appended to the command.
+.PP
+The BROWSER environment variable is honored only if the rc-file doesn't
+contain the COMMAND option.
+The rc-file provided by the Debian package contains a COMMAND option.
 .SH SEE ALSO
 .PP
 .BR printf (3),
 .BR regcomp (3), 
-.BR regex (7)
+.BR regex (7),
+.BR environ (7)
 .SH AUTHOR
 .PP
 Michael Elkins <me@cs.hmc.edu>.
 .PP
-Modified for Debian by Luis Francisco Gonzalez <luisgh@debian.org>.
+Modified for Debian by Luis Francisco Gonzalez <luisgh@debian.org> and Emanuele Rocca <ema@debian.org>.
 .PP
 Modified for SuSE by Dr. Werner Fink <werner@suse.de> and Stepan Kasal <kasal@suse.cz>.
 .PP

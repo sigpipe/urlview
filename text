@@ -13,11 +13,17 @@ Please see the Mutt Home Page at http://www.cs.hmc.edu/~me/mutt, or
 its mirror site http://www.mutt.org.
 
 Sometimes we also see things like www.gnustep.org, or
-www.windowmaker.org all by itself with no http or ftp.
+www.windowmaker.org/features.html all by itself with no http or ftp.
 
 www.m-w.com is a good internet dictionary.
 
-ftp://ftp.fooboo.com
-ftp.fooboo.com
+Also "strange" urls like www3.google.com are now supported.
 
-me
+ftp://ftp.fooboo.com
+Ftp urls without protocol, like ftp.debian.org, are recognized.
+
+ftp.us.debian.org/debian/pool/main/u/urlview/urlview_0.9-6_i386.deb
+
+Since urlview-0.9-11 we are also able to manage correctly RFC 2368 urls 
+(mailto URL scheme). For instance:
+<mailto:infobot@example.com?body=send%20current-issue>

@@ -46,9 +46,9 @@
 #include <rx/rxposix.h>
 #endif
 
-#define DEFAULT_REGEXP "(((https?|ftp|gopher)://|(mailto|file|news):)[^' \t<>\"]+|(www|web|w3)\\.[-a-z0-9.]+)[^' \t.,;<>\"\\):]"
-#define DEFAULT_COMMAND "url_handler.sh %s"
-#define SYSTEM_INITFILE "/etc/urlview.conf"
+#define DEFAULT_REGEXP "(((http|https|ftp|gopher)|mailto):(//)?[^ <>\"\t]*|(www|ftp)[0-9]?\.[-a-z0-9.]+)[^ .,;\t\n\r<\">\):]?[^, <>\"\t]*[^ .,;\t\n\r<\">\):]"
+#define DEFAULT_COMMAND "/etc/urlview/url_handler.sh %s"
+#define SYSTEM_INITFILE "/etc/urlview/system.urlview"
 
 #define OFFSET 2
 #define PAGELEN (LINES - 1 - OFFSET)
@@ -157,6 +157,7 @@ int main (int argc, char **argv)
   char regexp[1024];
   char search[1024];
   char scratch[1024];
+  char wrapchoice[1024];
   char **url;
   int urlsize = URLSIZE;
   char *pc;
@@ -165,6 +166,7 @@ int main (int argc, char **argv)
   size_t offset;
   int i;
   int top = 0;
+  int startline = 0;
   int oldcurrent = 0;
   int current = 0;
   int done = 0;
@@ -176,13 +178,17 @@ int main (int argc, char **argv)
   int is_filter = 0;
 
   int expert = 0;
+
+  int skip_browser = 0;
+
+  int menu_wrapping = 0;
   
   if (!argv[optind])
     is_filter = 1;
 
   strncpy (regexp, DEFAULT_REGEXP, sizeof (regexp) - 1);
   strncpy (command, DEFAULT_COMMAND, sizeof (command) - 1);
-
+  
   /*** read the initialization file ***/
 
   pw = getpwuid (getuid ());
@@ -243,6 +249,28 @@ int main (int argc, char **argv)
 	pc[ strlen (pc) - 1 ] = 0; /* kill the trailing newline */
 	strncpy (command, pc, sizeof (command) - 1);
 	command[sizeof (command) - 1] = 0;
+	skip_browser = 1;
+      }
+      else if (strncmp ("WRAP", buf, 4) == 0 && isspace (buf[4]))
+      {
+	pc = buf + 4;
+	while (isspace (*pc))
+	  pc++;
+	pc[ strlen (pc) - 1 ] = 0; /* kill the trailing newline */
+	strncpy (wrapchoice, pc, sizeof (wrapchoice) - 1);
+	wrapchoice[sizeof (wrapchoice) - 1] = 0;
+	/* checking the value, case insensitive */
+	if (strcasecmp("YES", wrapchoice) == 0)
+		menu_wrapping = 1;
+	else if (!strcasecmp("NO", wrapchoice) == 0)
+	{
+		printf ("Unknown value for WRAP: %s. Valid values are: YES, NO\n", wrapchoice);
+		exit (1);
+	}	
+      }
+      else if (strncmp ("BROWSER", buf, 7) == 0 && isspace (buf[7]))
+      {
+	skip_browser = 0;
       }
       else if (strcmp ("EXPERT\n", buf) == 0)
       {
@@ -256,11 +284,29 @@ int main (int argc, char **argv)
     }
     fclose (fp);
   }
+ 
+  /* Only use the $BROWSER environment variable if 
+   * (a) no COMMAND in rc file or
+   * (b) BROWSER in rc file.
+   * If both COMMAND and BROWSER are in the rc file, then the option used
+   * last counts.
+   */
+  if (!skip_browser) {
+    pc = getenv("BROWSER");
+    if (pc)
+    {
+        if (strlen(pc) > 0) {
+          strncpy (command, pc, sizeof (command) - 1);
+        } else {
+          printf("Your $BROWSER is zero-length.  Falling back to COMMAND.");
+        }
+    }
+  }
 
   if (!expert && strchr (command, '\'')) 
   {
     puts ("\n\
-ERROR: Your COMMAND contains a single\n\
+ERROR: Your $BROWSER contains a single\n\
 quote (') character. This is most likely\n\
 in error; please read the manual page\n\
 for details. If you really want to use\n\
@@ -296,6 +342,11 @@ into a line of its own in your \n\
       fp = stdin;
       reopen_tty = 1;
     }
+	else if (!is_filter && argv[optind][0] == '-') {
+	  startline = atoi(argv[optind]+1);
+	  current = -1;
+	  continue;
+	}
     else if (!(fp = fopen (argv[optind], "r")))
     {
       perror (argv[optind]);
@@ -304,6 +355,7 @@ into a line of its own in your \n\
 
     while (fgets (buf, sizeof (buf) - 1, fp) != NULL)
     {
+	  --startline;
       offset = 0;
       while (regexec (&rx, buf + offset, 1, &match, offset ? REG_NOTBOL : 0) == 0)
       {
@@ -335,6 +387,8 @@ into a line of its own in your \n\
 	    break;
 	  }
 	}
+	if (current < 0 && startline <= 0)
+	  current = urlcount;
 	urlcount++;
 	offset += match.rm_eo;
       }
@@ -352,16 +406,27 @@ into a line of its own in your \n\
     puts ("No URLs found.");
     exit (1);
   }
+
+  if (current < 0)
+    current = urlcount - 1;
   
   /*** present the URLs to the user ***/
 
 #ifdef USE_SLANG
-  if (reopen_tty)
+  if (reopen_tty) {
     SLang_TT_Read_FD = open ("/dev/tty", O_RDONLY);
+    if(SLang_TT_Read_FD < 0) {
+	    perror("Can't open /dev/tty");
+	    exit(1);
+    }
   initscr ();
 #else
   /* if we piped a file we can't use initscr() because it assumes `stdin' */
   fp = reopen_tty ? fopen ("/dev/tty", "r") : stdin;
+  if(fp == NULL) {
+	  perror("Can't open /dev/tty");
+	  exit(1);
+  }
   scr = newterm (NULL, stdout, fp);
   set_term (scr);
 #endif
@@ -372,6 +437,10 @@ into a line of its own in your \n\
   curs_set (1);
 #endif
   keypad (stdscr, TRUE);
+  
+  top = current - PAGELEN / 2;
+  if (top < 0)
+    top = 0;
 
   while (!done)
   {
@@ -427,7 +496,17 @@ into a line of its own in your \n\
 	    redraw = MOTION;
 	}
 	else
-	  beep ();
+	{
+	  if(menu_wrapping)
+        current = 0;
+	  if (current < top)
+	  {
+	    top = current - current % PAGELEN;
+		redraw = INDEX;
+	  }
+	  else
+	    redraw = MOTION;
+	}
 	break;
       case KEY_UP:
       case 'k':
@@ -443,7 +522,17 @@ into a line of its own in your \n\
 	    redraw = MOTION;
 	}
 	else
-	  beep ();
+    {
+      if(menu_wrapping)
+        current = urlcount - 1;
+	  if (current > top + PAGELEN - 1)
+	  {
+	    top = current - current % PAGELEN;
+	    redraw = INDEX;
+	  }
+	  else
+	    redraw = MOTION;
+	}
 	break;
       case KEY_HOME:
       case '=':
@@ -476,7 +565,10 @@ into a line of its own in your \n\
 	  redraw = INDEX;
 	}
 	else
-	  beep ();
+	{
+	  current = urlcount - 1;
+	  redraw = INDEX;
+	}
 	break;
       case KEY_PPAGE:
       case '\002':
@@ -493,6 +585,11 @@ into a line of its own in your \n\
 	  }
 	  redraw = INDEX;
 	}
+	else
+	{
+	  current = 0;
+	  redraw = INDEX;
+	}
 	break;
       case '\n':
       case '\r':
@@ -503,16 +600,27 @@ into a line of its own in your \n\
 	mvaddstr (LINES - 1, 0, "URL: ");
 	if (mutt_enter_string (buf, sizeof (buf), LINES - 1, 5, 0) == 0 && buf[0])
 	{
+	  char *part, *tmpbuf;
+
 	  free (url[current]);
 	  url[current] = strdup (buf);
 	  endwin ();
-	  if (strstr (command, "%s"))
-	    snprintf (buf, sizeof (buf), command, quote (scratch, sizeof (scratch), url[current]));
-	  else
-	    snprintf (buf, sizeof (buf), "%s %s", command, quote (scratch, sizeof (scratch), url[current]));
-	  printf ("Executing: %s...\n", buf);
-	  fflush (stdout);
-	  system (buf);
+
+	  tmpbuf = strdup(command);
+	  part = strtok(tmpbuf, ":");
+	  do {
+              quote (scratch, sizeof (scratch), url[current]);
+	      if (strstr (part, "%s"))
+		  snprintf (buf, sizeof (buf), part, scratch);
+	      else
+		  snprintf (buf, sizeof (buf), "%s %s", part, scratch);
+	      printf ("Executing: %s...\n", buf);
+	      fflush (stdout);
+	      if (system (buf) == 0)
+		  break;
+	  } while
+	      (part = strtok(NULL, ":"));
+	  free(tmpbuf);
 	}
 	move (LINES - 1, 0);
 	clrtoeol ();

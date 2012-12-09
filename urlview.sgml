@@ -20,7 +20,7 @@ specific item.
 <p>
 <em/urlview/ attempts to read <em>&tilde;/.urlview</em> upon startup.
 If this file doesn't exist, it will try to read a system wide file 
-in <em>/etc/urlview.conf</em>. There are
+in <em>/etc/urlview/system.urlview</em>. There are
 two configuration commands (order does not matter):
 <p>
 REGEXP &lt;regular expression to use for URL matching&gt;
@@ -31,7 +31,7 @@ text files.  &bsol;r, &bsol;t, &bsol;n and &bsol;f are all converted to
 their normal printf(2) meanings.  The default REGEXP is
 
 <verb>
-(((https?|ftp|gopher)://|(mailto|file|news):)[^' \t<>"]+|(www|web|w3)\.[-a-z0-9.]+)[^' \t.,;<>"\):]
+(((http|https|ftp|gopher)|mailto):(//)?[^ <>"\t]*|(www|ftp)[0-9]?\.[-a-z0-9.]+)[^ .,;\t\n\r<">\):]?[^, <>"\t]*[^ .,;\t\n\r<">\):]
 </verb>
 
 <p>
@@ -62,7 +62,7 @@ If you pass this URL to your shell, it could have nasty consequences.
 <p>
 <descrip>
 <tag>
-/etc/urlview.conf
+/etc/urlview/system.urlview
 <p>
 system-wide urlview configuration file
 <tag>
@@ -71,6 +71,17 @@ system-wide urlview configuration file
 urlview configuration file
 </descrip>
 
+<sect1>ENVIRONMENT
+<p>
+If the environment variable BROWSER is set to a browser command, or a
+colon-delimited list of commands to try, then the specified browser is
+used. %s is replaced with the quoted url to view. If %s is not part of a
+command, the url is appended to the command.
+<p>
+The BROWSER environment variable is honored only if the rc-file doesn't 
+contain the COMMAND option.
+The rc-file provided by the Debian package contains a COMMAND option.
+
 <sect1>SEE ALSO
 <p>
 regcomp(3)
@@ -78,6 +89,6 @@ regcomp(3)
 <sect1>AUTHOR
 <p>
 Michael Elkins &lt;me@cs.hmc.edu&gt;.
-Modified for Debian by Luis Francisco Gonzalez &lt;luisgh@debian.org&gt;.
+Modified for Debian by Luis Francisco Gonzalez &lt;luisgh@debian.org&gt; and Emanuele Rocca &lt;ema@debian.org&gt;.
 Modified for SuSE by Dr. Werner Fink &lt;werner@suse.de&gt; and Stepan Kasal &lt;kasal@suse.cz&gt;.
 </manpage>
