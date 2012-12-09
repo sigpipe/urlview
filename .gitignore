@@ -20,3 +20,7 @@ autom4te.cache
 confdefs.h
 config.cache
 config.log
+Makefile
+config.status
+depcomp
+urlview
