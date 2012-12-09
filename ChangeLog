@@ -1,0 +1,71 @@
+0.2 => 0.3
+==========
+
+- urls can now be edited before being launced
+
+- check for snprintf and use supplied if not present
+
+- slang support with `configure --with-slang'
+
+- check for regex.h did not define HAVE_REGEX_H
+
+- backslash (\) quoting did not work for things like \.
+
+0.3 => 0.4
+==========
+
+- add -Dunix to the CFLAGS so that building with slang under hp-ux will work
+
+- need to include <fcntl.h> in main.c
+
+- now accepts input from stdin even if stdin is a tty
+
+- `h' is now an alias for `q' (lynx compatibility)
+
+- automake is now used for this package
+
+0.4 => 0.5
+==========
+
+- ^L refreshes the screen
+
+From: Aaron Schrab <aaron+mutt@schrab.com>
+- 0-9 can be used to jump to a specific url
+- fixed redraw bug when changing pages
+- pagelength was incorrectly calculated
+- dynamically increase array if more than 128 urls are found
+
+0.5 => 0.6
+==========
+
+- backspace char was not honored in line editor
+- delete now erases the char under the cursor in the line editor
+- man page was not installed by `install' target
+
+0.6 => 0.7
+==========
+
+- KEY_DC is not defined for S-Lang
+- include <rxposix.h> instead of <rx.h>
+
+0.7 => 0.8
+==========
+
+- Search forward and backward using / and ? (from Brian Salter-Duke
+  <b_duke@lacebark.ntu.edu.au>)
+- Eliminate duplicates (most likely from robotti@metconnect.com
+  (Kent Robotti))
+- Some changes for Debian (including a new url_handler.sh) from Luis
+  Francisco Gonzalez <luisgh@debian.org> and Martin Schulze
+  <joey@debian.org>.
+
+0.8 => 0.9
+==========
+
+- Include SuSE's changes.  From Werner Fink <werner@suse.de> and
+  Stepan Kasal <kasal@su se.cz>.
+- Do paranoid shell quoting on parameters passed to the script, so
+  users don't shoot themselves by matching "'" in their regular
+  expressions.  From Thomas Roessler <roessler@does-not-exist.org>.
+- Fix quoting in the url_handler.sh script.
+

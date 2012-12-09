@@ -1,0 +1,18 @@
+urlview 0.9
+===========
+
+ftp://ftp.mutt.org/pub/mutt/contrib/urlview-0.9.tar.gz
+
+`urlview' is a curses program for extracting URLs from text files and
+displaying a menu from which you can select a specific URL to view using
+your favorite browser program.
+
+Requires: working regcomp() or GNU rx.
+
+Michael Elkins <me@cs.hmc.edu>
+February 4, 1997
+
+Thomas Roessler <roessler@does-not-exist.org>
+July 4, 2000
+
+

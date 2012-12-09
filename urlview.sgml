@@ -1,0 +1,83 @@
+<!doctype linuxdoc system>
+
+<manpage title="urlview" sectnum="1">
+
+<sect1>NAME
+<p>
+urlview - URL extractor/launcher
+
+<sect1>SYNOPSIS
+<p>
+urlview &lt;filename&gt; &lsqb; &lt;filename&gt; ... &rsqb;
+
+<sect1>DESCRIPTION
+<p>
+<em/urlview/ is a screen oriented program for extracting URLs from text
+files and displaying a menu from which you may launch a command to view a
+specific item.
+
+<sect1>CONFIGURATION
+<p>
+<em/urlview/ attempts to read <em>&tilde;/.urlview</em> upon startup.
+If this file doesn't exist, it will try to read a system wide file 
+in <em>/etc/urlview.conf</em>. There are
+two configuration commands (order does not matter):
+<p>
+REGEXP &lt;regular expression to use for URL matching&gt;
+<p>
+
+<em/urlview/ uses a regular expression to extract URLs from the specified
+text files.  &bsol;r, &bsol;t, &bsol;n and &bsol;f are all converted to
+their normal printf(2) meanings.  The default REGEXP is
+
+<verb>
+(((https?|ftp|gopher)://|(mailto|file|news):)[^' \t<>"]+|(www|web|w3)\.[-a-z0-9.]+)[^' \t.,;<>"\):]
+</verb>
+
+<p>
+COMMAND &lt;command to launch with URL&gt;
+<p>
+If the specified command contains a ``&percnt;s'', it will be subsituted
+with the URL that was requested, otherwise the URL is appended to the
+COMMAND string.  The default COMMAND is
+<verb>
+	url_handler.sh '%s'
+</verb>
+another possibility would be
+<verb>
+	Netscape -remote 'openURL(%s)'
+</verb>
+<bf/NOTE:/ you should always put single quotes ('') around usage of
+``&percnt;s'' and never let the REGEXP to match any string containing
+a single quote (note <tt/&lsqb;&caret;&apos;...&rsqb;/ in the default REGEXP)
+to avoid characters in the selected URL from being interpreted
+by your shell.  For example, I could put the following URL in my email
+messages:
+<verb>
+	X-Nasty-Url: http://www.`program_to_execute_as_you`.com
+</verb>
+If you pass this URL to your shell, it could have nasty consequences.
+
+<sect1>FILES
+<p>
+<descrip>
+<tag>
+/etc/urlview.conf
+<p>
+system-wide urlview configuration file
+<tag>
+&tilde;/.urlview
+<p>
+urlview configuration file
+</descrip>
+
+<sect1>SEE ALSO
+<p>
+regcomp(3)
+
+<sect1>AUTHOR
+<p>
+Michael Elkins &lt;me@cs.hmc.edu&gt;.
+Modified for Debian by Luis Francisco Gonzalez &lt;luisgh@debian.org&gt;.
+Modified for SuSE by Dr. Werner Fink &lt;werner@suse.de&gt; and Stepan Kasal &lt;kasal@suse.cz&gt;.
+</manpage>

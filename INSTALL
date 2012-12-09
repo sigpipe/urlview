@@ -1,0 +1,19 @@
+Installation Notes for `urlview'
+===============================
+
+To configure:
+
+	./configure
+
+To use the S-LANG library:
+
+	./configure --with-slang
+
+Build:
+
+	make
+
+Install:
+
+	make install
+
