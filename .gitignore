@@ -15,3 +15,8 @@
 *.exe
 *.out
 *.app
+
+autom4te.cache
+confdefs.h
+config.cache
+config.log
