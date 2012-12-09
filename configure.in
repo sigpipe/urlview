@@ -23,10 +23,13 @@ AC_ARG_WITH(slang, [  --with-slang[=DIR]      use S-Lang instead of curses],
 		LIBS="$LIBS -lslang -lm"
 	fi],
 
-	[AC_CHECK_LIB(ncurses, initscr, [LIBS="$LIBS -lncurses"], [LIBS="$LIBS -lcurses"])
+	[AC_CHECK_LIB(ncursesw, initscr,
+	 [LIBS="$LIBS -lncursesw"],
+	 [AC_CHECK_LIB(ncurses, initscr, [LIBS="$LIBS -lncurses"], [LIBS="$LIBS -lcurses"])])
 	AC_CHECK_FUNCS(curs_set)
 	AC_CHECK_HEADERS(ncurses.h)
-	AC_CHECK_HEADER(ncurses/curses.h, [CPPFLAGS="$CPPFLAGS -I/usr/include/ncurses"])])
+	AC_CHECK_HEADER(ncursesw/curses.h, [CPPFLAGS="$CPPFLAGS -I/usr/include/ncursesw"],
+		[AC_CHECK_HEADER(ncurses/curses.h, [CPPFLAGS="$CPPFLAGS -I/usr/include/ncurses"])])])
 
 AC_REPLACE_FUNCS(snprintf)
 
