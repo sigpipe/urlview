@@ -102,7 +102,7 @@ The rc-file provided by the Debian package contains a COMMAND option.
 .BR environ (7)
 .SH AUTHOR
 .PP
-Michael Elkins <me@cs.hmc.edu>.
+Michael Elkins <me@sigpipe.org>
 .PP
 Modified for Debian by Luis Francisco Gonzalez <luisgh@debian.org> and Emanuele Rocca <ema@debian.org>.
 .PP

@@ -88,7 +88,7 @@ regcomp(3)
 
 <sect1>AUTHOR
 <p>
-Michael Elkins &lt;me@cs.hmc.edu&gt;.
+Michael Elkins &lt;me@sigpipe.org&gt;.
 Modified for Debian by Luis Francisco Gonzalez &lt;luisgh@debian.org&gt; and Emanuele Rocca &lt;ema@debian.org&gt;.
 Modified for SuSE by Dr. Werner Fink &lt;werner@suse.de&gt; and Stepan Kasal &lt;kasal@suse.cz&gt;.
 </manpage>
