@@ -1,7 +1,8 @@
 AC_INIT(urlview.c)
 AM_INIT_AUTOMAKE(urlview, 0.9)
 dnl AM_CONFIG_HEADER(config.h)
-AM_PROG_CC_STDC
+AC_PROG_CC_STDC
+AC_PROG_CC_C99
 CFLAGS="$CFLAGS -DURLVIEW -Dunix"
 AC_ARG_WITH(slang, [  --with-slang[=DIR]      use S-Lang instead of curses],
 	[AC_DEFINE(USE_SLANG)
