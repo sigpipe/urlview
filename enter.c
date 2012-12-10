@@ -139,9 +139,7 @@ int mutt_enter_string (unsigned char *buf, size_t buflen, int y, int x,
   int width = COLS - x - 1;	/* width of field */
   int redraw = M_REDRAW_INIT;	/* when/what to redraw */
   int pass = (flags == M_PASS);
-  int first = 1;
   int j;
-  char tempbuf[_POSIX_PATH_MAX] = "";
 
   FOREVER
   {
@@ -188,25 +186,8 @@ int mutt_enter_string (unsigned char *buf, size_t buflen, int y, int x,
 
     if (ch != 0)
     {
-      first = 0; /* make sure not to clear the buffer */
       switch (ch)
       {
-#ifndef URLVIEW
-	case OP_EDITOR_HISTORY_UP:
-	  if (!pass)
-	  {
-	    strfcpy ((char *) buf, sh_prev (), buflen);
-	    redraw = M_REDRAW_INIT;
-	  }
-	  break;
-	case OP_EDITOR_HISTORY_DOWN:
-	  if (!pass)
-	  {
-	    strfcpy ((char *) buf, sh_next (), buflen);
-	    redraw = M_REDRAW_INIT;
-	  }
-	  break;
-#endif /* ! URLVIEW */
 	case OP_EDITOR_BACKSPACE:
 	  if (curpos == 0)
 	  {
@@ -373,100 +354,12 @@ int mutt_enter_string (unsigned char *buf, size_t buflen, int y, int x,
       /* use the raw keypress */
       ch = LastKey;
 
-#ifndef URLVIEW
-      if ((flags & M_EFILE) && ch == ' ')
-      {
-	buf[curpos] = 0;
-	mutt_buffy ((char *) buf);
-	redraw = M_REDRAW_INIT;
-	continue;
-      }
-
-      if (first && (flags & M_CLEAR))
-      {
-	first = 0;
-	if (IsPrint (ch))
-	{
-	  mutt_ungetch (ch);
-	  buf[0] = 0;
-	  redraw = M_REDRAW_INIT;
-	  continue;
-	}
-      }
-
-      if ((flags & (M_FILE | M_EFILE)) && (ch == '\t' || ch == ' '))
-      {
-	buf[curpos] = 0;
-
-	/* see if the path has changed from the last time */
-	if (strcmp (tempbuf, (char *) buf) == 0)
-	{
-	  mutt_select_file ((char *) buf, buflen, 0);
-	  set_option (OPTNEEDREDRAW);
-	  if (buf[0])
-	  {
-	    mutt_pretty_mailbox ((char *) buf);
-	    sh_add ((char *) buf);
-	    return (0);
-	  }
-	  return (-1);
-	}
-
-	if (mutt_complete ((char *) buf) == 0)
-	  strfcpy (tempbuf, (char *) buf, sizeof (tempbuf));
-	else
-	  BEEP (); /* let the user know that nothing matched */
-	redraw = M_REDRAW_INIT;
-	continue;
-      }
-
-      if ((flags & M_CMD) && ch == '\t')
-      {
-	buf[curpos] = 0;
-	for (j = curpos - 1; j >= 0 && buf[j] != ' '; j--);
-	if (strcmp (tempbuf, (char *) buf) == 0)
-	{
-	  mutt_select_file ((char *) buf + j + 1, buflen - j - 1, 0);
-	  set_option (OPTNEEDREDRAW);
-	  return (1);
-	}
-	if (mutt_complete ((char *) buf + j + 1) == 0)
-	  strfcpy (tempbuf, (char *) buf + j + 1, sizeof (tempbuf));
-	else
-	  BEEP ();
-	redraw = M_REDRAW_INIT;
-	continue;
-      }
-
-      if (ch == '\t' && (flags & M_ALIAS))
-      {
-	/* invoke the alias-menu to get more addresses */
-	buf[curpos] = 0;
-	if (curpos)
-	{
-	  for (j = curpos - 1 ; j >= 0 && buf[j] != ' ' && buf[j] != ',' ; j--);
-	  if (mutt_alias_complete ((char *) buf + j + 1, buflen - j - 1))
-	  {
-	    redraw = M_REDRAW_INIT;
-	    continue;
-	  }
-	}
-	else
-	  mutt_alias_menu ((char *) buf, buflen, Aliases);
-	return (1);
-      }
-#endif /* ! URLVIEW */
-
       if (CI_is_return (ch))
       {
 	buf[lastchar] = 0;
-#ifndef URLVIEW
-	if (!pass)
-	  sh_add ((char *) buf);
-#endif
 	return (0);
       }
-      else if (IsPrint (ch) && (lastchar + 1 < buflen))
+      else if (IsPrint (ch) && ((size_t)(lastchar + 1) < buflen))
       {
 	for (j = lastchar; j > curpos; j--)
 	  buf[j] = buf[j - 1];

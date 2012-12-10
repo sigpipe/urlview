@@ -47,7 +47,9 @@
 #include <rx/rxposix.h>
 #endif
 
-#define DEFAULT_REGEXP "(((http|https|ftp|gopher)|mailto):(//)?[^ <>\"\t]*|(www|ftp)[0-9]?\.[-a-z0-9.]+)[^ .,;\t\n\r<\">\):]?[^, <>\"\t]*[^ .,;\t\n\r<\">\):]"
+#include "quote.h"
+
+#define DEFAULT_REGEXP "(((http|https|ftp|gopher)|mailto):(//)?[^ <>\"\t]*|(www|ftp)[0-9]?\\.[-a-z0-9.]+)[^ .,;\t\n\r<\">\\):]?[^, <>\"\t]*[^ .,;\t\n\r<\">\\):]"
 #define DEFAULT_COMMAND "/etc/urlview/url_handler.sh %s"
 #define SYSTEM_INITFILE "/etc/urlview/system.urlview"
 
@@ -108,6 +110,7 @@ void search_backward (char *search, int urlcount, char **url, int *redraw, int *
   regex_t rx;
   int i, j;
 
+  (void)urlcount; /*unused*/
   if (strlen(search) == 0 || *search == '\n')
   {
     move (LINES - 1, 0);
@@ -174,7 +177,6 @@ int main (int argc, char **argv)
   int redraw = FULL;
   int urlcount = 0;
   int urlcheck = 0;
-  int optind = 1;
   int reopen_tty = 0;
   int is_filter = 0;
 
@@ -184,7 +186,7 @@ int main (int argc, char **argv)
 
   int menu_wrapping = 0;
   
-  if (!argv[optind])
+  if (argc == 1)
     is_filter = 1;
 
   strncpy (regexp, DEFAULT_REGEXP, sizeof (regexp) - 1);
@@ -599,7 +601,7 @@ into a line of its own in your \n\
 	strncpy (buf, url[current], sizeof (buf));
 	buf[sizeof (buf) - 1] = 0;
 	mvaddstr (LINES - 1, 0, "URL: ");
-	if (mutt_enter_string (buf, sizeof (buf), LINES - 1, 5, 0) == 0 && buf[0])
+	if (mutt_enter_string ((unsigned char *)buf, sizeof (buf), LINES - 1, 5, 0) == 0 && buf[0])
 	{
 	  char *part, *tmpbuf;
 
@@ -620,7 +622,7 @@ into a line of its own in your \n\
 	      if (system (buf) == 0)
 		  break;
 	  } while
-	      (part = strtok(NULL, ":"));
+	      ((part = strtok(NULL, ":")) != NULL);
 	  free(tmpbuf);
 	}
 	move (LINES - 1, 0);
@@ -638,7 +640,7 @@ into a line of its own in your \n\
       case '9':
 	buf[0] = i; buf[1] = 0;
 	mvaddstr (LINES - 1, 0, "Jump to url: ");
-	if (mutt_enter_string (buf, sizeof (buf), LINES - 1, 13, 0) == 0 && buf[0])
+	if (mutt_enter_string ((unsigned char *)buf, sizeof (buf), LINES - 1, 13, 0) == 0 && buf[0])
 	{
 	  i = atoi (buf);
 	  if (i < 1 || i > urlcount) 
@@ -666,12 +668,12 @@ into a line of its own in your \n\
 	break;
       case '/':
 	mvaddstr (LINES - 1, 0, "Search forwards for string: ");
-	if (mutt_enter_string (search, sizeof (search), LINES - 1, 28, 0) == 0)
+	if (mutt_enter_string ((unsigned char *)search, sizeof (search), LINES - 1, 28, 0) == 0)
 	  search_forward (search, urlcount, url, &redraw, &current, &top);
 	break;
       case '?':
 	mvaddstr (LINES - 1, 0, "Search backwards for string: ");
-	if (mutt_enter_string (search, sizeof (search), LINES - 1, 29, 0) == 0)
+	if (mutt_enter_string ((unsigned char *)search, sizeof (search), LINES - 1, 29, 0) == 0)
 	  search_backward (search, urlcount, url, &redraw, &current, &top);
         break;
       case 'n':
