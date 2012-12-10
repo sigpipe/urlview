@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 1997 Michael R. Elkins <me@cs.hmc.edu>
+ * Copyright (C) 2012 Michael R. Elkins <me@sigpipe.org>
  * 
  *     This program is free software; you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by

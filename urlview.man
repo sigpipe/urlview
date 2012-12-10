@@ -6,6 +6,7 @@
 .\"
 .\" Copyright (c) 1997 Michael Elkins <me@cs.hmc.edu>
 .\" Copyright (c) 2000 Thomas Roessler <roessler@does-not-exist.org>
+.\" Copyright (c) 2012 Michael Elkins <me@sigpipe.org>
 .\"
 .\" This document is free software; you can redistribute it and/or 
 .\" modify it under the terms of the GNU General Public License as
