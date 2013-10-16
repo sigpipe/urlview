@@ -64,7 +64,7 @@ enum
   MOTION
 };
 
-extern int mutt_enter_string (unsigned char *buf, size_t buflen, int y, int x,
+extern int mutt_enter_string (char *buf, size_t buflen, int y, int x,
 		int flags);
 
 void search_forward (char *search, int urlcount, char **url, int *redraw, int *current, int *top)
