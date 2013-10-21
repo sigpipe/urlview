@@ -58,6 +58,11 @@ messages:
 </verb>
 If you pass this URL to your shell, it could have nasty consequences.
 
+<p>
+QUITONLAUNCH
+<p>
+Will cause urlview to quit after you launch a URL.
+
 <sect1>FILES
 <p>
 <descrip>

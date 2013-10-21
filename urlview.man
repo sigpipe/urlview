@@ -79,6 +79,9 @@ explicitly excludes single quotes.)
 WRAP  \fIchoice\fP
 Enable or disable URL wrapping. Valid values for \fIchoice\fP are: yes, no (case insensitive).
 If this option is not supplied, the default behaviour is to disable wrapping.
+.TP
+QUITONLAUNCH
+Will cause urlview to quit after you launch a URL.
 .SH FILES
 .PP
 .IP "/etc/urlview/system.urlview"
