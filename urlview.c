@@ -174,6 +174,7 @@ int main (int argc, char **argv)
   int oldcurrent = 0;
   int current = 0;
   int done = 0;
+  int quitonlaunch = 0;
   int redraw = FULL;
   int urlcount = 0;
   int urlcheck = 0;
@@ -279,6 +280,10 @@ int main (int argc, char **argv)
       {
 	expert = 1;
       }
+	  else if (strcmp ("QUITONLAUNCH\n", buf) == 0)
+	  {
+	quitonlaunch = 1;
+	  }
       else
       {
 	printf ("Unknown command: %s", buf);
@@ -625,6 +630,7 @@ into a line of its own in your \n\
 	      ((part = strtok(NULL, ":")) != NULL);
 	  free(tmpbuf);
 	}
+	done = quitonlaunch;
 	move (LINES - 1, 0);
 	clrtoeol ();
 	break;
