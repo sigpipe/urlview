@@ -487,11 +487,11 @@ into a line of its own in your \n\
     {
       case 'q':
       case 'x':
-      case 'h':
 	done = 1;
 	break;
       case KEY_DOWN:
       case 'j':
+      case 'h':
 	if (current < urlcount - 1)
 	{
 	  current++;
@@ -518,6 +518,7 @@ into a line of its own in your \n\
 	break;
       case KEY_UP:
       case 'k':
+      case 't':
 	if (current)
 	{
 	  current--;
