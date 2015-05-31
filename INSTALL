@@ -3,7 +3,7 @@ Installation Notes for `urlview'
 
 To configure:
 
-	aclocle
+	aclocal
 	automake -a
 	./configure
 
