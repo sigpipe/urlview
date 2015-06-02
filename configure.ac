@@ -1,5 +1,6 @@
-AC_INIT(urlview.c)
-AM_INIT_AUTOMAKE(urlview, 0.9)
+AC_INIT(urlview, 0.10)
+AC_CONFIG_SRCDIR(urlview.c)
+AM_INIT_AUTOMAKE
 dnl AM_CONFIG_HEADER(config.h)
 AC_PROG_CC_STDC
 AC_PROG_CC_C99

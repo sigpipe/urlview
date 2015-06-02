@@ -3,6 +3,8 @@ Installation Notes for `urlview'
 
 To configure:
 
+	aclocal
+	automake -a
 	./configure
 
 To use the S-LANG library:
