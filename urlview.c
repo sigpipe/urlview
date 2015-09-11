@@ -57,6 +57,8 @@
 #define PAGELEN (LINES - 1 - OFFSET)
 #define URLSIZE 128
 
+#define CTRL(x) ((x)-'@')
+
 enum
 {
   FULL = 1,
@@ -491,6 +493,7 @@ into a line of its own in your \n\
 	done = 1;
 	break;
       case KEY_DOWN:
+      case CTRL('N'):
       case 'j':
 	if (current < urlcount - 1)
 	{
@@ -517,6 +520,7 @@ into a line of its own in your \n\
 	}
 	break;
       case KEY_UP:
+      case CTRL('P'):
       case 'k':
 	if (current)
 	{
@@ -543,6 +547,7 @@ into a line of its own in your \n\
 	}
 	break;
       case KEY_HOME:
+      case '<':
       case '=':
 	if (top != 0)
 	{
@@ -554,6 +559,7 @@ into a line of its own in your \n\
 	current = 0;
 	break;
       case KEY_END:
+      case '>':
       case '*':
       case 'G':
 	current = urlcount - 1;
@@ -566,6 +572,7 @@ into a line of its own in your \n\
 	  redraw = MOTION;
 	break;
       case KEY_NPAGE:
+      case CTRL('V'):
       case '\006':
 	if (top + PAGELEN < urlcount)
 	{
