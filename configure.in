@@ -32,6 +32,11 @@ AC_ARG_WITH(slang, [  --with-slang[=DIR]      use S-Lang instead of curses],
 	AC_CHECK_HEADER(ncursesw/curses.h, [CPPFLAGS="$CPPFLAGS -I/usr/include/ncursesw"],
 		[AC_CHECK_HEADER(ncurses/curses.h, [CPPFLAGS="$CPPFLAGS -I/usr/include/ncurses"])])])
 
+AC_ARG_WITH(pcre, [  --with-pcre[=DIR]       use pcre regex],
+  [AC_DEFINE(USE_PCRE)]
+  [AC_CHECK_LIB(pcre, regexec, [LIBS="$LIBS -lpcre"])]
+  AC_CHECK_HEADERS(pcre.h))
+
 AC_REPLACE_FUNCS(snprintf)
 
 AC_ARG_WITH(rx, [  --with-rx=DIR           where to find librx],
