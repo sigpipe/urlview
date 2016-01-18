@@ -69,81 +69,81 @@ extern int mutt_enter_string (unsigned char *buf, size_t buflen, int y, int x,
 
 void search_forward (char *search, int urlcount, char **url, int *redraw, int *current, int *top)
 {
-  regex_t rx;
-  int i, j;
-
-  if (strlen(search) == 0 || *search == '\n')
-  {
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = MOTION;
-  } 
-  else
-  {
-    if ( (j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)) )
-    {
-      regerror (j, &rx, search, sizeof (search));
-      regfree (&rx);
-      puts (search);
-    }
-    for (i = *current + 1; i < urlcount; i++)
-    {
-      if (regexec (&rx, url[i], 0, NULL, 0) == 0)
-      {
-	*current = i;
-	if (*current < *top || *current > *top + PAGELEN -1)
-	{
-	  *top = *current - *current % PAGELEN - 1;
-	}
-	i = urlcount;
-      }
-    }
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = INDEX;
-    regfree (&rx);
-  }
+  // regex_t rx;
+  // int i, j;
+  //
+  // if (strlen(search) == 0 || *search == '\n')
+  // {
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = MOTION;
+  // }
+  // else
+  // {
+  //   if ( (j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)) )
+  //   {
+  //     regerror (j, &rx, search, sizeof (search));
+  //     regfree (&rx);
+  //     puts (search);
+  //   }
+  //   for (i = *current + 1; i < urlcount; i++)
+  //   {
+  //     if (regexec (&rx, url[i], 0, NULL, 0) == 0)
+  //     {
+// *current = i;
+// if (*current < *top || *current > *top + PAGELEN -1)
+// {
+  // *top = *current - *current % PAGELEN - 1;
+// }
+// i = urlcount;
+  //     }
+  //   }
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = INDEX;
+  //   regfree (&rx);
+  // }
 }
 
 void search_backward (char *search, int urlcount, char **url, int *redraw, int *current, int *top)
 {
-  regex_t rx;
-  int i, j;
-
-  (void)urlcount; /*unused*/
-  if (strlen(search) == 0 || *search == '\n')
-  {
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = MOTION;
-  } 
-  else
-  {
-    if ((j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)))
-    {
-      regerror (j, &rx, search, sizeof (search));
-      regfree (&rx);
-      puts (search);
-    }
-    for (i = *current - 1; i >= 0; i--)
-    {
-      if (regexec (&rx, url[i], 0, NULL, 0) == 0)
-      {
-	*current = i;
-	if (*current < *top || *current > *top + PAGELEN -1)
-	{
-	  *top = *current - *current % PAGELEN - 1;
-	  if (*top < 0)
-	    *top = 0;
-	}
-	i = 0;
-      }
-    }
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = INDEX;
-    regfree (&rx);
-  }
+  // regex_t rx;
+  // int i, j;
+  //
+  // (void)urlcount; /*unused*/
+  // if (strlen(search) == 0 || *search == '\n')
+  // {
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = MOTION;
+  // }
+  // else
+  // {
+  //   if ((j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)))
+  //   {
+  //     regerror (j, &rx, search, sizeof (search));
+  //     regfree (&rx);
+  //     puts (search);
+  //   }
+  //   for (i = *current - 1; i >= 0; i--)
+  //   {
+  //     if (regexec (&rx, url[i], 0, NULL, 0) == 0)
+  //     {
+// *current = i;
+// if (*current < *top || *current > *top + PAGELEN -1)
+// {
+  // *top = *current - *current % PAGELEN - 1;
+  // if (*top < 0)
+    // *top = 0;
+// }
+// i = 0;
+  //     }
+  //   }
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = INDEX;
+  //   regfree (&rx);
+  // }
 }
  
 int main (int argc, char **argv)
