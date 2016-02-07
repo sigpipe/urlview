@@ -709,6 +709,7 @@ ac_user_opts='
 enable_option_checking
 enable_dependency_tracking
 with_slang
+with_pcre
 with_rx
 enable_warnings
 '
@@ -1341,6 +1342,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-slang=DIR      use S-Lang instead of curses
+  --with-pcre=DIR       use pcre regex
   --with-rx=DIR           where to find librx
 
 Some influential environment variables:
@@ -4628,6 +4630,66 @@ fi
 
 fi
 
+
+fi
+
+
+
+# Check whether --with-pcre was given.
+if test "${with_pcre+set}" = set; then :
+  withval=$with_pcre; $as_echo "#define USE_PCRE 1" >>confdefs.h
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for regexec in -lpcre" >&5
+$as_echo_n "checking for regexec in -lpcre... " >&6; }
+if ${ac_cv_lib_pcre_regexec+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpcre  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char regexec ();
+int
+main ()
+{
+return regexec ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pcre_regexec=yes
+else
+  ac_cv_lib_pcre_regexec=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pcre_regexec" >&5
+$as_echo "$ac_cv_lib_pcre_regexec" >&6; }
+if test "x$ac_cv_lib_pcre_regexec" = xyes; then :
+  LIBS="$LIBS -lpcre"
+fi
+
+  for ac_header in pcre.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "pcre.h" "ac_cv_header_pcre_h" "$ac_includes_default"
+if test "x$ac_cv_header_pcre_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PCRE_H 1
+_ACEOF
+
+fi
+
+done
 
 fi
 

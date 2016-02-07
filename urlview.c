@@ -41,10 +41,14 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#ifdef HAVE_PCRE_H
+#include <pcre.h>
+#else
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #else
 #include <rx/rxposix.h>
+#endif
 #endif
 
 #include "quote.h"
@@ -69,81 +73,81 @@ extern int mutt_enter_string (unsigned char *buf, size_t buflen, int y, int x,
 
 void search_forward (char *search, int urlcount, char **url, int *redraw, int *current, int *top)
 {
-  regex_t rx;
-  int i, j;
-
-  if (strlen(search) == 0 || *search == '\n')
-  {
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = MOTION;
-  } 
-  else
-  {
-    if ( (j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)) )
-    {
-      regerror (j, &rx, search, sizeof (search));
-      regfree (&rx);
-      puts (search);
-    }
-    for (i = *current + 1; i < urlcount; i++)
-    {
-      if (regexec (&rx, url[i], 0, NULL, 0) == 0)
-      {
-	*current = i;
-	if (*current < *top || *current > *top + PAGELEN -1)
-	{
-	  *top = *current - *current % PAGELEN - 1;
-	}
-	i = urlcount;
-      }
-    }
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = INDEX;
-    regfree (&rx);
-  }
+  // regex_t rx;
+  // int i, j;
+  //
+  // if (strlen(search) == 0 || *search == '\n')
+  // {
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = MOTION;
+  // }
+  // else
+  // {
+  //   if ( (j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)) )
+  //   {
+  //     regerror (j, &rx, search, sizeof (search));
+  //     regfree (&rx);
+  //     puts (search);
+  //   }
+  //   for (i = *current + 1; i < urlcount; i++)
+  //   {
+  //     if (regexec (&rx, url[i], 0, NULL, 0) == 0)
+  //     {
+// *current = i;
+// if (*current < *top || *current > *top + PAGELEN -1)
+// {
+  // *top = *current - *current % PAGELEN - 1;
+// }
+// i = urlcount;
+  //     }
+  //   }
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = INDEX;
+  //   regfree (&rx);
+  // }
 }
 
 void search_backward (char *search, int urlcount, char **url, int *redraw, int *current, int *top)
 {
-  regex_t rx;
-  int i, j;
-
-  (void)urlcount; /*unused*/
-  if (strlen(search) == 0 || *search == '\n')
-  {
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = MOTION;
-  } 
-  else
-  {
-    if ((j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)))
-    {
-      regerror (j, &rx, search, sizeof (search));
-      regfree (&rx);
-      puts (search);
-    }
-    for (i = *current - 1; i >= 0; i--)
-    {
-      if (regexec (&rx, url[i], 0, NULL, 0) == 0)
-      {
-	*current = i;
-	if (*current < *top || *current > *top + PAGELEN -1)
-	{
-	  *top = *current - *current % PAGELEN - 1;
-	  if (*top < 0)
-	    *top = 0;
-	}
-	i = 0;
-      }
-    }
-    move (LINES - 1, 0);
-    clrtoeol ();
-    *redraw = INDEX;
-    regfree (&rx);
-  }
+  // regex_t rx;
+  // int i, j;
+  //
+  // (void)urlcount; /*unused*/
+  // if (strlen(search) == 0 || *search == '\n')
+  // {
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = MOTION;
+  // }
+  // else
+  // {
+  //   if ((j = regcomp (&rx, search, REG_EXTENDED | REG_ICASE | REG_NEWLINE)))
+  //   {
+  //     regerror (j, &rx, search, sizeof (search));
+  //     regfree (&rx);
+  //     puts (search);
+  //   }
+  //   for (i = *current - 1; i >= 0; i--)
+  //   {
+  //     if (regexec (&rx, url[i], 0, NULL, 0) == 0)
+  //     {
+// *current = i;
+// if (*current < *top || *current > *top + PAGELEN -1)
+// {
+  // *top = *current - *current % PAGELEN - 1;
+  // if (*top < 0)
+    // *top = 0;
+// }
+// i = 0;
+  //     }
+  //   }
+  //   move (LINES - 1, 0);
+  //   clrtoeol ();
+  //   *redraw = INDEX;
+  //   regfree (&rx);
+  // }
 }
  
 int main (int argc, char **argv)
@@ -154,8 +158,13 @@ int main (int argc, char **argv)
   SCREEN *scr;
 #endif
   FILE *fp;
+#if HAVE_PCRE_H
+  pcre *rx;
+  int ovector[30];
+#else
   regex_t rx;
   regmatch_t match;
+#endif
   char buf[1024];
   char command[1024];
   char regexp[1024];
@@ -327,10 +336,19 @@ into a line of its own in your \n\
   
   /*** compile the regexp ***/
 
-  if ((i = regcomp (&rx, regexp, REG_EXTENDED | REG_ICASE | REG_NEWLINE)))
-  {
-    regerror (i, &rx, buf, sizeof (buf));
-    regfree (&rx);
+#if HAVE_PCRE_H
+	const char *regex_error;
+	int error_offset;
+	rx = pcre_compile(regexp, 0, &regex_error, &error_offset, NULL);
+	if (rx == NULL)
+	{
+		printf("ERROR: Could not compile '%s': %s\n", regexp, regex_error);
+#else
+	if ((i = regcomp (&rx, regexp, REG_EXTENDED | REG_ICASE | REG_NEWLINE)))
+	{
+		regerror (i, &rx, buf, sizeof (buf));
+		regfree (&rx);
+#endif
     puts (buf);
     exit (1);
   }
@@ -365,9 +383,21 @@ into a line of its own in your \n\
     {
 	  --startline;
       offset = 0;
-      while (regexec (&rx, buf + offset, 1, &match, offset ? REG_NOTBOL : 0) == 0)
-      {
-	len = match.rm_eo - match.rm_so;
+
+#if HAVE_PCRE_H
+    int length = strlen(buf);
+    while (pcre_exec (rx, NULL, buf + offset, length - offset, 0, offset ? PCRE_NOTBOL : 0, ovector, 30) >= 0)
+    {
+      int match_start = ovector[0];
+      int match_end = ovector[1];
+#else
+    while (regexec (&rx, buf + offset, 1, &match, offset ? REG_NOTBOL : 0) == 0)
+    {
+      int match_start = match.rm_so;
+      int match_end = match.rm_eo;
+#endif
+
+	len = match_end - match_start;
         if (urlcount >= urlsize)
 	{
 	  void *urltmp;
@@ -385,7 +415,7 @@ into a line of its own in your \n\
 	  }
 	}
 	url[urlcount] = malloc (len + 1);
-	memcpy (url[urlcount], buf + match.rm_so + offset, len);
+	memcpy (url[urlcount], buf + match_start + offset, len);
 	url[urlcount][len] = 0;
 	for (urlcheck=0; urlcheck < urlcount; urlcheck++)
 	{
@@ -398,7 +428,7 @@ into a line of its own in your \n\
 	if (current < 0 && startline <= 0)
 	  current = urlcount;
 	urlcount++;
-	offset += match.rm_eo;
+	offset += match_end;
       }
     }
   got_urls:
@@ -407,7 +437,11 @@ into a line of its own in your \n\
       break;
   }
 
-  regfree (&rx);
+#if HAVE_PCRE_H
+	pcre_free (rx);
+#else
+	regfree (&rx);
+#endif
 
   if (!urlcount)
   {
