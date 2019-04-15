@@ -543,6 +543,7 @@ into a line of its own in your \n\
 	}
 	break;
       case KEY_HOME:
+	  case 'g': 
       case '=':
 	if (top != 0)
 	{
