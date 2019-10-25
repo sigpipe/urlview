@@ -427,6 +427,7 @@ into a line of its own in your \n\
 	    perror("Can't open /dev/tty");
 	    exit(1);
     }
+  }
   initscr ();
 #else
   /* if we piped a file we can't use initscr() because it assumes `stdin' */
