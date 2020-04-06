@@ -11,6 +11,7 @@ EXTRA_DIST = text urlview.man urlview.sgml sample.urlview \
 CLEANFILES = *~ *.orig *.rej
 
 install-data-local:
+	$(MKDIR_P) $(mandir)/man1/
 	$(INSTALL_DATA) urlview.man $(mandir)/man1/urlview.1
 
 # how to create a target for uninstall-data-local???
