@@ -156,7 +156,7 @@ int main (int argc, char **argv)
   FILE *fp;
   regex_t rx;
   regmatch_t match;
-  char buf[1024];
+  char buf[4096];
   char command[1024];
   char regexp[1024];
   char search[1024];
