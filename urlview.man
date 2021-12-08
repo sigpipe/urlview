@@ -31,7 +31,7 @@ specific item.
 .PP
 .B urlview
 attempts to read 
-.I ~/.urlview
+.I ~/.config/urlview/config
 upon startup.  If this file
 doesn't exist, it will try to read a system wide file 
 in 
@@ -86,7 +86,7 @@ Will cause urlview to quit after you launch a URL.
 .PP
 .IP "/etc/urlview/system.urlview"
 system-wide urlview configuration file
-.IP "~/.urlview"
+.IP "~/.config/urlview/config"
 urlview configuration file
 .SH ENVIRONMENT
 If the environment variable BROWSER is set to a browser command, or a
