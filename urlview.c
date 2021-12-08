@@ -196,7 +196,7 @@ int main (int argc, char **argv)
   /*** read the initialization file ***/
 
   pw = getpwuid (getuid ());
-  snprintf (buf, sizeof (buf), "%s/.urlview", pw->pw_dir);
+	snprintf (buf, sizeof (buf), "%s/.config/urlview/config", pw->pw_dir);
 
   /*** Check for users rc-file ***/
   if (stat (buf,&stat_buf) == -1)
@@ -320,7 +320,7 @@ in error; please read the manual page\n\
 for details. If you really want to use\n\
 this command, please put the word EXPERT\n\
 into a line of its own in your \n\
-~/.urlview file.\n\
+~/..config/urlview/config file.\n\
 ");
     exit (1);
   }

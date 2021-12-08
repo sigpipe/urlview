@@ -2,7 +2,7 @@
 # Urlview configuration file.
 # man urlview  <Man page>
 #
-# Put this file in: $HOME/.urlview
+# Put this file in: $HOME/.config/urlview/config
 # Put url_handler.sh in: /usr/bin
 #
 # You can call 'urlview' while in 'mutt' by pressing the Ctrl b keys.
